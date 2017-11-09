@@ -1,0 +1,6 @@
+.idea/*
+config
+FlaskWebProject1/.idea
+bin
+env
+.DS_Store
