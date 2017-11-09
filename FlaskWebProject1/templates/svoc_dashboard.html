@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends'bootstrap/base.html' %}
+{% import 'macros.html' as macros %}
+<head>
+    <meta charset="UTF-8">
+    {% block title %} SVOC {% endblock %}
+</head>
+<body>
+    {% block navbar %}
+        <nav class="navbar navbar-inverse" role="navigation">
+            <div class="container">
+                <a class="navbar-brand" href="#">SVOC Basic Dashboard</a>
+            </div>
+        </nav>
+    {% endblock %}
+    {% block content %}
+        <div class="container">
+            <h1>Customer View</h1>
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                {% for document in documents %}
+                    {{ macros.row(document) }}
+                {% endfor %}
+            </div>
+        </div>
+    {% endblock %}
+</body>
+</html>

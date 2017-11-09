@@ -1,32 +1,36 @@
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, _app_ctx_stack, jsonify
+from FlaskWebProject1.app.cosmosdb import CosmosDB, DocumentManagement
+from config.default import BaseConfig
 
 profile = Blueprint('profile', __name__)
 
+
+def get_db():
+    app_context = _app_ctx_stack
+    db = getattr(app_context, "DB", None)
+    if db is None:
+        db = CosmosDB(BaseConfig.HOST, BaseConfig.MASTER_KEY, BaseConfig.DATABASE_ID)
+        app_context.DB = db
+    return db
+
+
+@profile.route('/svoc/<string:id>')
+def get_id(id):
+    db = get_db()
+    document = DocumentManagement.get_document(client=db.client, database_link=db.database_link,
+                                               collection=BaseConfig.COLLECTION_ID, id=id)
+    return jsonify(document)
+
+
 @profile.route('/svoc/search', methods=['GET'])
-@profile.route('/home')
-def home():
-    return 'Welcome Home'
+def search():
+    params = request.args.to_dict()
+    db = get_db()
+    params['collection_id'] = BaseConfig.COLLECTION_ID
+    if params.get('id') is None:
+        params['id'] = 'id'
+    documents = DocumentManagement.query_collection(client=db.client, database_link=db.database_link,
+                                                      collection=BaseConfig.COLLECTION_ID, params=params)
+    return render_template('svoc_dashboard.html', documents=documents)
 
 
-@profile.route('/svoc/bootstrap')
-def test_bootstrap():
-    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
-              'August', 'September', 'October', 'November', 'December']
-    weather = {
-        'January': {'min': 38, 'max': 47, 'rain': 6.14},
-        'February': {'min': 38, 'max': 51, 'rain': 4.79},
-        'March': {'min': 41, 'max': 56, 'rain': 4.5},
-        'April': {'min': 44, 'max': 61, 'rain': 3.4},
-        'May': {'min': 49, 'max': 67, 'rain': 2.55},
-        'June': {'min': 53, 'max': 73, 'rain': 1.69},
-        'July': {'min': 57, 'max': 80, 'rain': 0.59},
-        'August': {'min': 58, 'max': 80, 'rain': 0.71},
-        'September': {'min': 54, 'max': 75, 'rain': 1.54},
-        'October': {'min': 48, 'max': 63, 'rain': 3.42},
-        'November': {'min': 41, 'max': 52, 'rain': 6.74},
-        'December': {'min': 36, 'max': 45, 'rain': 6.94}
-    }
-    highlight = {'min': 40, 'max': 80, 'rain': 5}
-
-    return render_template('bootstrap_index.html', city='Portland, OR', months=months,
-                           weather=weather, highlight=highlight, brand='All brand')
