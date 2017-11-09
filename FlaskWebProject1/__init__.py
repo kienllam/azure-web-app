@@ -3,6 +3,7 @@ The flask application package.
 """
 
 from flask import Flask
-app = Flask(__name__)
+from .views.profile import profile
 
-import FlaskWebProject1.views
+app = Flask(__name__)
+app.register_blueprint(profile)
