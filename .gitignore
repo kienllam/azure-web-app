@@ -3,3 +3,6 @@ config
 FlaskWebProject1/.idea
 env
 .DS_Store
+__pycache__/
+*.py[cod]
+*$py.class

@@ -1,0 +1,42 @@
+{% extends 'bootstrap/base.html' %}
+{% import 'macros.html' as macros %}
+
+
+{% block title %} Customer for {{ brand }} {% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            <a class="navbar-brand" href="#">SVOC Basic Dashboard</a>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Customer Dashboard</h1>
+        <h2>{{ brand }}</h2>
+        <table class="table table-hover">
+            <tr>
+                <th>Month</th>
+                <th>Min</th>
+                <th>Max</th>
+                <th>Rainfall</th>
+            </tr>
+            {% for month in months %}
+                {{ macros.weather_row(month,
+                                        weather[month]['min'],
+                                        weather[month]['max'],
+                                        weather[month]['rain'],
+                                        highlight['min'],
+                                        highlight['max'],
+                                        highlight['rain']) }}
+            {%  endfor %}
+        </table>
+{#        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">#}
+{#            {% for customer in customers %}#}
+{#                {{ macros.customer_row(customer) }}#}
+{#            {% endfor %}#}
+{#        </div>#}
+
+{% endblock %}
